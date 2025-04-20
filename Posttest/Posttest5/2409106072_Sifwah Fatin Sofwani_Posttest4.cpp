@@ -75,7 +75,7 @@ int jumlahAkun = 2;
 int kesempatan = 0;
 
 void tampilkanMenuUtama();
-bool loginUser(string username, string password, string &rolesekarang);
+bool loginUser(string &username, string password, string &rolesekarang);
 void adminMenu();
 void userMenu();
 void tambahHero();
@@ -92,7 +92,7 @@ void cls() {
     system("cls");
 }
 
-bool attemptLogin(int attempts) { // Ganti nama fungsi
+bool attemptLogin(int attempts) { 
     if (attempts >= 3) {
         cls();
         cout << "Anda sudah mencoba login sebanyak 3 kali. Program berakhir." << endl;
@@ -125,10 +125,10 @@ bool carihero(string heroName) {
     return false;
 }
 
-bool carihero(string heroName, int &posIndex, int &heroIndex) {
+bool carihero(string *heroName, int &posIndex, int &heroIndex) {
     for (int i = 0; i < 5; ++i) {
         for (int j = 0; j < 10; ++j) {
-            if (listhero[i][j][0][0] != '\0') { 
+            if (listhero[i][j][0][0] != '\0' && listhero[i][j][0] == *heroName) { 
                 posIndex = i;
                 heroIndex = j;
                 return true;
@@ -217,7 +217,8 @@ void tampilkanMenuUtama() {
     cout << "Masukkan pilihan anda: ";
 }
 
-bool loginUser(string username, string password, string &rolesekarang) {
+
+bool loginUser(string &username, string password, string &rolesekarang) {
     for (int i = 0; i < jumlahAkun; ++i) {
         if (user[i].username == username && user[i].password == password) {
             rolesekarang = user[i].role;
@@ -287,9 +288,8 @@ void tambahHero() {
     cout << "Masukkan nama hero: ";
     getline(cin, nama);
     
-    herotersedia = carihero(nama);
-
-    if (herotersedia) {
+    int posIndex, heroIndex;
+    if (carihero(&nama, posIndex, heroIndex)) {
         cls();
         cout << "Hero sudah ada." << endl;
         return;
@@ -318,7 +318,7 @@ void tambahHero() {
     }
 
     for (int j = 0; j < 10; ++j) {
-        if (listhero[posisiIndex][j][0][0] != '\0') {
+        if (listhero[posisiIndex][j][0] == "") {
             listhero[posisiIndex][j][0] = nama;
             listhero[posisiIndex][j][1] = role;
             listhero[posisiIndex][j][2] = mekanik;
@@ -336,7 +336,6 @@ void tambahHero() {
     }
 }
 
-
 void editHero() {
     moved = false;
     ditemukan = false;
@@ -346,7 +345,8 @@ void editHero() {
     getline(cin, nama);
     
     int posIndex, heroIndex;
-    if (carihero(nama, posIndex, heroIndex)) {
+
+    if (carihero(&nama, posIndex, heroIndex)) {
         cout << "Masukkan role baru: ";
         getline(cin, listhero[posIndex][heroIndex][1]);
         cout << "Masukkan tingkat mekanik baru: ";
@@ -418,11 +418,11 @@ void hapusHero() {
     cout << "5. EXP" << endl;
     cout << "Masukkan posisi hero yang akan dihapus (1-5): ";
     cin >> posisi;
+    cin.ignore();
     posisi--; 
     
     if (posisi < 0 || posisi >= 5) {
         cout << "Posisi tidak valid." << endl;
-        cin.ignore();
         return;
     }
 
@@ -432,7 +432,7 @@ void hapusHero() {
     cout << "+-" << string(18, '-') << "-+-" << string(18, '-') << "-+-" << string(18, '-') << "-+-" << string(18, '-') << "-+-" << string(18, '-') << "-+" << endl;
     
     for (int j = 0; j < 10; ++j) {
-        if (listhero[posisi][j][0][0] != '\0') { 
+        if (listhero[posisi][j][0] != "") { 
             cout << "| " << left << setw(18) << panjang + 1 << " | " << setw(18) << listhero[posisi][j][0] << " | " << setw(18) << listhero[posisi][j][1] << " | " << setw(18) << listhero[posisi][j][2] << " | " << setw(18) << listhero[posisi][j][3] << " |" << endl;
             panjang++;
         }
@@ -445,14 +445,14 @@ void hapusHero() {
     } else {
         cout << "Masukkan nomor hero yang akan dihapus: ";
         cin >> index;
+        cin.ignore();
         
         if (index > 0 && index <= panjang) {
-    
             int actualIndex = -1;
             int count = 0;
             
             for (int j = 0; j < 10; ++j) {
-                if (listhero[posisi][j][0][0] != '\0') { 
+                if (listhero[posisi][j][0] != "") { 
                     count++;
                     if (count == index) {
                         actualIndex = j;
@@ -482,7 +482,6 @@ void hapusHero() {
             cout << "Nomor hero tidak valid." << endl;
         }
     }
-
 }
 
 void tampilkanHero() {
@@ -493,7 +492,7 @@ void tampilkanHero() {
         cout << "+-" << string(18, '-') << "-+-" << string(18, '-') << "-+-" << string(18, '-') << "-+-" << string(18, '-') << "-+" << endl;
 
         for (int j = 0; j < 10; ++j) {
-            if (listhero[i][j][0][0] != '\0') { // Mengganti .empty() dengan listhero[i][j][0][0] != '\0'
+            if (listhero[i][j][0][0] != '\0') { 
                 cout << "| " << left << setw(18) << listhero[i][j][0] << " | " 
                     << setw(18) << listhero[i][j][1] << " | " 
                     << setw(18) << listhero[i][j][2] << " | " 
