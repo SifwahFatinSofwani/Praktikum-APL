@@ -92,7 +92,7 @@ void cls() {
     system("cls");
 }
 
-bool attemptLogin(int attempts) { // Ganti nama fungsi
+bool loginberhasil(int attempts) {
     if (attempts >= 3) {
         cls();
         cout << "Anda sudah mencoba login sebanyak 3 kali. Program berakhir." << endl;
@@ -110,7 +110,7 @@ bool attemptLogin(int attempts) { // Ganti nama fungsi
         return true;
     } else {
         cout << "Username atau password salah." << endl;
-        return attemptLogin(attempts + 1);
+        return loginberhasil(attempts + 1);
     }
 }
 
@@ -148,7 +148,7 @@ int main() {
         if (choice == "1") {
             kesempatan = 0; 
             quit = false;
-            if (attemptLogin(0)) {
+            if (loginberhasil(0)) {
                 if (rolesekarang == "admin") {
                     adminMenu();
                 } else {
@@ -482,7 +482,7 @@ void hapusHero() {
             cout << "Nomor hero tidak valid." << endl;
         }
     }
-
+    cin.ignore();
 }
 
 void tampilkanHero() {
